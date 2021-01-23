@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang = "en">
+    <head>
+        <title>Login Page</title>
+
+        <meta charset = "UTF-8">
+        <meta name = "viewport" content = "width = device-width, initial-scale = 1">
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+        <!-- jQuery library -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+        <!-- Popper JS -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+
+        <!-- Latest compiled JavaScript -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    </head>
+<body>
+    
+    <div class = "container-fluid">
+        <div class = "row text-white bg-dark">
+            <h1>Welcome To Mailer Services</h1>
+        </div>
+<div class = "row">
+    <div class = "col-4">
+
+    </div>
+    <div class = "card" style = "margin-top: 20px;">
+        <div class = "card-header">
+            <h4 class = "float-center">Mail Service</h4>
+        </div>
+        <div class = "modal fade" role = "dialog" id = "forgotMail">
+            <div class = "modal-dialog ">
+                <div class = "modal-content">
+                    <div class = "modal-header">
+                        <h4>Forgot Password</h4>
+                        <button class = "close" data-dismiss = "modal">&times;</button>
+                    </div>
+                    <div class = "modal-body">
+                        <form action = "{{url_for('forms_bp.forgot_password')}}" method = "POST">
+                        <div class = "form-group">
+                            <label for = "fMailField">Send verfication code to:</label>
+                            <input type = "email" name = "userFmail" id = "fMailField" placeholder = "Enter E-mail..." class = "form-control" required/>
+                            <input type = "submit" value = "Send" style = "margin-top: 20px;" class = "btn btn-primary">
+                        </div>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div class = "modal fade" role = "dialog" id = "gmailError">
+            <div class = "modal-dialog">
+                <div class = "modal-content">
+                    <div class = "modal-header">
+                        <button class = "close" data-dismiss = "modal">&times;</button>
+                    </div>
+                    <div class = "modal-body">
+                        <p id = "gmailErrorMessage"></p>
+                    </div>
+                    <div class = "modal-footer">
+                        <button class = "btn btn-primary float-right" data-dismiss = "modal">OK</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class = "modal fade" role = "dialog" id = "invalidForgotEmail">
+            <div class = "modal-dialog">
+                <div class = "modal-content">
+                    <div class = "modal-header">
+                        <button class = "close" data-dismiss = "modal">&times;</button>
+                    </div>
+                    <div class = "modal-body">
+                        <p id = "invalidForgotEmailMessage"></p>
+                    </div>
+                    <div class = "modal-footer">
+                        <button class = "btn btn-primary float-right" data-dismiss = "modal">OK</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class = "card-body container-fluid">
+            <div id = "alertMessage">
+            </div>
+    <form action = "http://localhost:5000/ValidLogin" method = "POST" style = "margin: 50px;" name = "loginForm">
+
+        <div class = "form-group">
+                <label for = "user_email">Email:</label>
+                <input type = "email" name = "email" id = "user_email" class = "form-control" placeholder = "Enter Email..." required>
+        </div>
+        <div class = "form-group"></div>
+                <label for = "user_password">Password:</label>
+                <input type = "password" name = "password" id = "user_password" class = "form-control" placeholder = " Enter Password..." required>
+        </div>
+        <div class = "form-group" style = "margin-left: 20px;">
+            <div class = "custom-control custom-checkbox">
+                <input type = "checkbox" class = "custom-control-input" id = "user_checkbox" name = "checkbox">
+                <label class = "custom-control-label" for = "user_checkbox">Remeber me</label>
+            </div>
+            
+        </div>
+        <div class = "row">
+            <div class = "col-xs-3">
+                <input type = "submit" value = "Login" class = "btn btn-primary"style = "margin-bottom: 20px;margin-left: 20px;margin-right: 20px;" id = "submitButton" onclick = "makeCookies()">
+            </div>
+            <div class = "col-xs-3">
+                <a href = "/RegisterationForm" style = "margin-left: 20px;margin-right: 20px;margin-bottom: 20px;"class = "btn btn-primary">SignUP!</a> 
+            </div>
+            <div class = "col-xs-3">
+                <a href = "#" style = "margin-left: 20px;margin-right: 20px;margin-bottom: 20px;" data-toggle = "modal" data-target = "#forgotMail">Forgot password</a>
+            </div>
+                
+        </div>
+        </form>
+        </div>
+    </div>
+</div>
+    <div class = "col-4">
+
+    </div>
+</div> 
+{%with messages = get_flashed_messages(category_filter = ["danger"])%}
+        {%if messages%}
+            {%for message in messages%}
+                <script>
+                    let alertMessage = "<div class = 'alert alert-danger alert-dismissible'>\
+                    <a href = '#' class = 'close' data-dismiss = 'alert'>&times;</a>\
+                    <strong>Error!!! </strong>{{message}}\
+                    </div>";
+                    document.getElementById("alertMessage").innerHTML = alertMessage;
+                </script>
+            {%endfor%}
+        {%endif%}
+    {%endwith%}
+
+    {%with messages = get_flashed_messages(category_filter = ["unauthorized"])%}
+        {%if messages%}
+            {%for message in messages%}
+                <script>
+                    let alertMessage = "<div class = 'alert alert-danger alert-dismissible'>\
+                    <a href = '#' class = 'close' data-dismiss = 'alert'>&times;</a>\
+                    <strong>Error!!! </strong> you are <strong>{{message}}</strong> to login\
+                    </div>";
+                    document.getElementById("alertMessage").innerHTML = alertMessage;
+                </script>
+            {%endfor%}
+        {%endif%}
+    {%endwith%}
+    {%with messages = get_flashed_messages(category_filter = ["gmail_error"])%}
+                {%if messages%}
+                    {% for message in messages %}
+                        <script>
+                            document.querySelector("#gmailErrorMessage").innerHTML = "{{message}}";
+                            $("#gmailError").modal();
+                        </script>
+                    {% endfor %}
+                {% endif %}
+    {% endwith %}
+    {% with messages = get_flashed_messages(category_filter = ["invalid_mail"])%}
+        {% if messages %}
+            {% for message in messages %}
+                <script>
+                    document.querySelector("#invalidForgotEmailMessage").innerHTML = "{{message}}";
+                    $("#invalidForgotEmail").modal();
+                </script>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+</body>
+</html>

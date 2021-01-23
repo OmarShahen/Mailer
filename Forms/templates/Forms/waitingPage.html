@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang = "en">
+    <head>
+        <title>Waiting Page</title>
+        <meta charset = "UTF-8">
+        <meta name = "viewport" content = "width = device-width, initial-scale = 1">
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+        <!-- jQuery library -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        
+        <!-- Popper JS -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+        
+        <!-- Latest compiled JavaScript -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    </head>
+    <body>
+        <div class = "container-fluid">
+            <div class = "row text-white bg-dark">
+                <h1>Mailer Services</h1>
+            </div>
+            <div id = "userStatusDiv" style = "display: none;">
+                <strong id = "userStatus"></strong>
+            </div>
+            <div class = "modal fade" role = "dialog" id = "newComerMessage">
+                <div class = "modal-dialog modal-lg">
+                    <div class = "modal-content">
+                        <div class = "modal-header">
+                            <button class = "close" data-dismiss = "modal">&times;</button>
+                        </div>
+                        <div class = "modal-body">
+                            <p>You will receive a message on your E-mail when your account is <span class = "text-success">Activated</span></p>
+                        </div>
+                        <div class = "modal-footer">
+                            <button class = "btn btn-primary" data-dismiss = "modal">OK</button>
+                        </div>
+                        <div>
+
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </body>
+    <script>
+        $(document).ready(function(){
+                                $("#newComerMessage").modal();
+                        });
+    </script>
+    <script>
+
+        setInterval( requestAccepted, 5000);
+        function requestAccepted()
+        {
+            let xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function()
+            {
+                if(this.status == 200 && this.readyState == 4)
+                {
+                    let accepted = JSON.parse(this.responseText)["accepted"];
+                    if(accepted)
+                        window.location.href = "{{url_for('user_mail_bp.see_inbox')}}";
+                }
+            };
+            xhttp.open("GET", "{{url_for('forms_bp.request_accepted', user_mail = user_mail)}}", true);
+            xhttp.send();
+        }
+    </script>
+    <script src = "{{url_for('static', filename = 'js/userStatus.js')}}"></script>
+</html>

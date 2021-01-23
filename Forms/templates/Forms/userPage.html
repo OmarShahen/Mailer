@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang = 'en'>
+    <head>
+        <title>User</title>
+
+        <meta charset = 'UTF-8'>
+        <meta name = 'viewport' content = 'width = device-width, initial-scale = 1'>
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+        <!-- jQuery library -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+        <!-- Popper JS -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+
+        <!-- Latest compiled JavaScript -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+        
+    </head>
+<body>
+    <div class = 'container-fluid'> 
+    <div id = "headerBar">
+        <h2>Mailer Services</h2>
+    </div>
+    <div id = "userStatusDiv" style = "display: none;">
+        <strong id = "userStatus"></strong>
+    </div>
+    <div id = "successMessage">
+
+    </div>
+    <div>
+        <ul class = "nav nav-justified bg-light">
+           
+            <li class = 'nav-item'>
+                <a href = "{{url_for('user_mail_bp.compose_email')}}" class = 'nav-link'>Compose Email</a>
+            </li>
+            <li class = 'nav-item'>
+                <a href = "{{url_for('user_mail_bp.see_inbox')}}" class = 'nav-link'>Inbox</a>
+            </li>
+            <li class = 'nav-item'>
+                <a href = "{{url_for('user_mail_bp.trash')}}" class = 'nav-link'>Trash</a>
+            </li>
+            <li class = 'nav-item'>
+                <a href = "{{url_for('user_mail_bp.see_outbox')}}" class = 'nav-link'>Outbox</a>
+            </li>
+            <li class = 'nav-item'>
+                <a href = "{{url_for('user_mail_bp.see_all_mail')}}" class = 'nav-link'>All Mail</a>
+            </li>
+            <li class = 'nav-item'>
+                <a href = "{{url_for('user_profile_bp.view_profile')}}" class = 'nav-link'>View Profile</a>
+            </li>
+            <li class = 'nav-item'>
+                <a href = "{{url_for('user_profile_bp.edit_profile_form')}}" class = 'nav-link'>Edit Profile</a>
+            </li>
+            <li class = 'nav-item'>
+                <a href = "{{url_for('user_profile_bp.view_all_users')}}" class = 'nav-link'>View All Users</a>
+            </li>
+            <li class = 'nav-item'>
+                <a href = "{{url_for('user_profile_bp.logout')}}" class = 'nav-link'>Logout</a>
+            </li>
+            <li class = 'nav-item'>
+                <a href = "{{url_for('user_profile_bp.delete_account')}}" class = 'nav-link'>Delete Account</a>
+            </li>
+            <li class = 'nav-item'>
+                <a href = '#' class = 'nav-link'>Contact US</a>
+            </li>
+        </ul>
+    </div>
+    <div style = 'margin-top:30px;'>
+<h4 class = 'text-primary'>Welcome {{user_name.upper()}}</h4>
+<p>Do any kind of operation related to Mail Services such as compose email,<br>
+    inbox.And if you have any Query just contact us.by clicking the above links.</p>
+    </div>
+</div>
+{%with messages = get_flashed_messages()%}
+    {%if messages%}
+        {%for message in messages%}
+            <script>
+                function removeAlertMessage()
+                {
+                    document.getElementById("successMessage").style.display = 'none';
+                }
+                let successLoginMessage =  "<div class = 'alert alert-success alert-dismissible'>\
+                    <a href = '#' class = 'close' data-dismiss = 'alert'>&times;</a>\
+                    <strong>{{message}}</strong>!\
+                    </div>";
+
+                    document.getElementById("successMessage").innerHTML = successLoginMessage;
+                    setTimeout(removeAlertMessage, 3000);
+                
+            </script>
+        {%endfor%}
+    {%endif%}
+{%endwith%}
+<script src = "{{url_for('static', filename = 'js/userStatus.js')}}"></script>
+</body>
+</html>

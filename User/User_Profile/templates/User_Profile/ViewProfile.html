@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang = "en">
+    <head>
+        <title>Edit Profile</title>
+        <meta charset = "UTF-8">
+        <meta name = "viewport" content = "width = device-width, initial-scale = 1">
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+        <!-- jQuery library -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+        <!-- Popper JS -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+
+        <!-- Latest compiled JavaScript -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+
+        <style>
+            .card{
+                margin-top: 20px;
+            }
+            .card-body{
+                margin: 10px;
+            }
+            .form-control{
+                margin: 5px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class = "container-fluid">
+        <div class = "row bg-dark text-white">
+            <h2>Mailer Services</h2>
+        </div>
+        <div id = "userStatusDiv" style = "display: none;">
+            <strong id = "userStatus"></strong>
+        </div>
+        <div>
+            <ul class = "nav nav-justified bg-light">
+                
+                <li class = 'nav-item'>
+                    <a href = "{{url_for('user_mail_bp.compose_email')}}" class = 'nav-link'>Compose Email</a>
+                </li>
+                <li class = 'nav-item'>
+                    <a href = "{{url_for('user_mail_bp.see_inbox')}}" class = 'nav-link'>Inbox<span id = "unseenMails" class = "badge badge-pill badge-danger" style = "margin-left: 5px;"></span></a>
+                </li>
+                <li class = 'nav-item'>
+                    <a href = "{{url_for('user_mail_bp.trash')}}" class = 'nav-link'>Trash</a>
+                </li>
+                <li class = 'nav-item'>
+                    <a href = "{{url_for('user_mail_bp.see_outbox')}}" class = 'nav-link'>Outbox</a>
+                </li>
+                <li class = 'nav-item'>
+                    <a href = "{{url_for('user_mail_bp.see_all_mail')}}" class = 'nav-link'>All Mail</a>
+                </li>
+                <li class = 'nav-item'>
+                    <a href = "{{url_for('user_profile_bp.view_profile')}}" class = 'nav-link'>View Profile</a>
+                </li>
+                <li class = 'nav-item'>
+                    <a href = "{{url_for('user_profile_bp.edit_profile_form')}}" class = 'nav-link'>Edit Profile</a>
+                </li>
+                <li class = 'nav-item'>
+                    <a href = "{{url_for('user_profile_bp.view_all_users')}}" class = 'nav-link'>View All Users</a>
+                </li>
+                <li class = 'nav-item'>
+                    <a href = "{{url_for('user_profile_bp.logout')}}" class = 'nav-link'>Logout</a>
+                </li>
+                <li class = 'nav-item'>
+                    <a href = "{{url_for('user_profile_bp.contact_us')}}" class = 'nav-link'>Contact US</a>
+                </li>
+            </ul>
+        </div>
+        <div class = "row">
+        <div class = "col-4">
+
+        </div>
+        <div class = "card">
+            <div class = "card-header">
+                <h4>Mail Services</h4>
+            </div>
+            <div class = card-body>
+        <form method="PUT" action = "http://localhost:5000/Edited">
+            <table>
+                <tr>
+                    <td>
+                        <label for = "user_name">Name:</label> 
+                    </td>
+                    <td> 
+                        <input type = "text" name = "user_name" value = "{{user['NAME']}}" id = "user_name" class = "form-control" readonly>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for = "user_email">Email:</label> 
+                    </td>
+                        <td>
+                            <input type="email" name = "user_email" value = "{{user['EMAIL']}}" id = "user_email" class = "form-control" readonly>
+                        </td>
+                    </tr>
+                    <td>
+                        <label for = "user_birth">Date of Birth:</label> 
+                    </td>
+                        <td>
+                            <input type = "date" name = "user_birthDate" value = "{{user['DATE_OF_BIRTH']}}" id = "user_birth" class = "form-control" readonly>
+                        </td>
+                    </tr>
+                <tr>
+                    <td>
+                        <label for = "user_city">City:</label>
+                    </td>
+                        <td>
+                            <input type = "text" name = "user_city" value = "{{user['CITY']}}" id = "user_city" class = "form-control" readonly>
+                        </td>
+                    </tr>
+                <tr>
+                    <td>
+                        <label for = "user_country">Country:</label> 
+                    </td>
+                        <td>
+                         <input type = "text" name = "user_country" value ="{{user['COUNTRY']}}" id = "user_country" class = "form-control" readonly>
+                        </td>
+                    </tr>
+                <tr>
+                    <td>
+                        <label for = "user_contact">Contact:</label>
+                    </td>
+                        <td>
+                            <input type = "text" name = "user_contact" value ="{{user['CONTACT']}}" id = "user_contact" class = "form-control" readonly>
+                        </td>
+                    </tr>
+                <tr>
+                    <td>
+                        <input type="submit" value = "Submit" class = "btn btn-primary">
+                    </td>
+                </tr>
+        </table>
+        </form>
+        </div>
+        </div>
+        <div class = "col-4">
+
+        </div>
+        </div>
+        </div>
+        <script>
+            getUnseenMails();
+            setInterval(getUnseenMails, 5000);
+    
+            function getUnseenMails()
+            {
+                let xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function()
+                {
+                    if(this.status == 200 && this.readyState == 4)
+                    {
+                        let unseenMails = JSON.parse(this.responseText)["unseen_mails"];
+                        document.querySelector("#unseenMails").innerHTML = unseenMails;
+                    }
+                };
+                xhttp.open("GET", "{{url_for('user_mail_bp.unseen_inbox', user_mail = user_mail)}}", true);
+                xhttp.send();
+            }
+        </script>
+        <script src = "{{url_for('static', filename = 'js/userStatus.js')}}"></script>
+    </body>
+</html>

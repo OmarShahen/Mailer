@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang = "en">
+    <head>
+        <title>Edit Profile</title>
+        <meta charset = "UTF-8">
+        <meta name = "viewport" content = "width = device-width, initial-scale = 1">
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+        <!-- jQuery library -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+        <!-- Popper JS -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+
+        <!-- Latest compiled JavaScript -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+
+        <style>
+            .card{
+                margin-top: 20px;
+            }
+            .card-body{
+                margin: 10px;
+            }
+            .form-control{
+                margin: 5px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class = "container-fluid">
+        <div class = "row bg-dark text-white">
+            <h2>Mailer Services</h2>
+        </div>
+        <div id = "userStatusDiv" style = "display: none;">
+            <strong id = "userStatus"></strong>
+        </div>
+        <div>
+            <ul class = "nav nav-justified bg-light">
+                
+                <li class = 'nav-item'>
+                    <a href = "{{url_for('user_mail_bp.compose_email')}}" class = 'nav-link'>Compose Email</a>
+                </li>
+                <li class = 'nav-item'>
+                    <a href = "{{url_for('user_mail_bp.see_inbox')}}" class = 'nav-link'>Inbox<span id = "unseenMails" class = "badge badge-pill badge-danger" style = "margin-left: 5px;"></span></a>
+                </li>
+                <li class = 'nav-item'>
+                    <a href = "{{url_for('user_mail_bp.trash')}}" class = 'nav-link'>Trash</a>
+                </li>
+                <li class = 'nav-item'>
+                    <a href = "{{url_for('user_mail_bp.see_outbox')}}" class = 'nav-link'>Outbox</a>
+                </li>
+                <li class = 'nav-item'>
+                    <a href = "{{url_for('user_mail_bp.see_all_mail')}}" class = 'nav-link'>All Mail</a>
+                </li>
+                <li class = 'nav-item'>
+                    <a href = "{{url_for('user_profile_bp.view_profile')}}" class = 'nav-link'>View Profile</a>
+                </li>
+                <li class = 'nav-item'>
+                    <a href = "{{url_for('user_profile_bp.edit_profile_form')}}" class = 'nav-link'>Edit Profile</a>
+                </li>
+                <li class = 'nav-item'>
+                    <a href = "{{url_for('user_profile_bp.view_all_users')}}" class = 'nav-link'>View All Users</a>
+                </li>
+                <li class = 'nav-item'>
+                    <a href = "{{url_for('user_profile_bp.logout')}}" class = 'nav-link'>Logout</a>
+                </li>
+                <li class = 'nav-item'>
+                    <a href = "{{url_for('user_profile_bp.contact_us')}}" class = 'nav-link'>Contact US</a>
+                </li>
+            </ul>
+        </div>
+        <div class = "row">
+            <div class = "col-10">
+                <input type = "text" class = "form-control" id = "userInput" placeholder = "Search Email..." style = "margin-top: 20px;margin-bottom: 20px;">
+            </div>
+            <div class = "col-2">
+                <button class = "btn btn-primary" id = "addReceiversButton" style = "margin-top: 20px;">Add Recivers</button>
+            </div>
+        </div>
+
+        <table class = "table table-striped">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>NAME</th>
+                <th>EMAIL</th>
+            </tr>
+            </thead>
+            <tbody>
+            {%for user in allUsers:%}
+                <tr id = "row">
+                    <td id = "userID">{{user[0]}}</td>
+                    <td id = "userName">{{user[1]}}</td>
+                    <td><a id = "userMail" href = "{{url_for('user_mail_bp.compose_to_email', user_mail = user[2])}}">{{user[2]}}</a></td>
+                    <td><button class = "btn btn-primary btn-sm" id = "addBtns" style = "display: none;">Add</button></td>
+                </tr>          
+            {%endfor%}
+            </tbody>
+        </table>
+        <div>
+        <table style = "height: 100px;">
+            <tr>
+                <td>
+                    <button class = "btn btn-primary" id = "selectAll" style = "display:none;">Select All</button>
+                </td>
+                <td>
+                    <button class = "btn btn-primary" id = "cancel" style = "display: none;">Cancel</button>
+                </td>
+                <td>
+                    <button class = "btn btn-primary" id = "cancelAll" style = "display: none;">Cancel All</button>
+                </td>
+                <td>
+                    <a class = "btn btn-primary" id = "done" style = "display: none;" href = "#">Done</a>
+                </td>
+
+                </tr>
+        </table>
+        <form action = "{{url_for('user_mail_bp.send_multi_users')}}" style = "display: none;" method = "POST" id = "form">
+            <input type = "hidden" id = "mailsField" name = "allMail" value = ""/>
+        </form>
+        </div>
+        </div>
+        <script>
+        
+
+
+            let receivers = [];
+            let allowSelection = false;
+            let allowAllSelection = true;
+            let allAddBtns = document.querySelectorAll("#addBtns");
+            let allMails = document.querySelectorAll("#userMail");
+            let searchBar = document.querySelector("#userInput");
+            let allTr = document.querySelectorAll("#row");
+
+            document.querySelector("#addReceiversButton").addEventListener("click", showButtons);
+            function showButtons()
+            {
+                allowSelection = true;
+                receivers = [];
+                document.querySelector("#selectAll").style.display = "block";
+                document.querySelector("#done").style.display = "block";
+                document.querySelector("#cancel").style.display = "block";
+                document.querySelector("#cancelAll").style.display = "block";
+                for(let i=0;i<allAddBtns.length;i++)
+                    allAddBtns[i].style.display = "block";
+            }
+
+            document.querySelector("#cancelAll").addEventListener("click", hideButtons);
+            function hideButtons()
+            {
+                allowSelection = false;
+                document.querySelector("#selectAll").style.display = "none";
+                document.querySelector("#done").style.display = "none";
+                document.querySelector("#cancel").style.display = "none";
+                document.querySelector("#cancelAll").style.display = "none";
+                for(let i=0;i<allAddBtns.length;i++)
+                    allAddBtns[i].style.display = "none";
+            }
+
+
+            document.querySelector("#selectAll").addEventListener("click", selectAll);
+            function selectAll()
+            {
+                if(allowAllSelection){
+                    let allMails = document.querySelectorAll("#userMail");
+                    for(let i=0;i<allMails.length;i++){
+                        receivers.push(allMails[i].innerHTML);
+                        allAddBtns[i].innerHTML = "remove";
+                        allAddBtns[i].className = "btn btn-danger btn-sm";
+                    }
+                    allowAllSelection = false;
+                }else{
+                    allowAllSelection = true;
+                }
+            }
+
+            document.querySelector("#cancel").addEventListener("click", removeAllReceivers);
+            function removeAllReceivers()
+            {
+                receivers = [];
+                for(let i=0;i<allAddBtns.length;i++){
+                    allAddBtns[i].className = "btn btn-primary btn-sm";
+                    allAddBtns[i].innerHTML = "Add";
+                }
+
+            }
+
+            for(let i=0;i<allAddBtns.length;i++)
+                allAddBtns[i].addEventListener("click", (event) => {
+                    if(event.target.innerHTML == "Add"){
+                        let userMail = event.target.parentNode.previousSibling.previousSibling.firstChild.innerHTML;
+                        receivers.push(userMail);
+                        event.target.className = "btn btn-danger btn-sm";
+                        event.target.innerHTML = "remove";
+                    }else{
+                        let userMail = event.target.parentNode.previousSibling.previousSibling.firstChild.innerHTML;
+                        for(let i=0;i<receivers.length;i++)
+                        {
+                            if(receivers[i] == userMail)
+                                {
+                                receivers.splice(i, 1);
+                                }   
+                        }
+                        event.target.className = "btn btn-primary btn-sm";
+                        event.target.innerHTML = "Add";
+                    }
+                });
+
+
+
+
+            document.querySelector("#done").addEventListener("click", () => {
+                document.forms["form"]["allMail"].value = JSON.stringify(receivers);
+                document.forms["form"].submit();
+            })
+
+
+            searchBar.addEventListener("keyup", filterMails)
+            function filterMails()
+            {
+
+                for(let i=0;i<allTr.length;i++)
+                {
+                    let email = allTr[i].childNodes[5].childNodes[0].innerHTML;
+                    if(email.toUpperCase().indexOf(searchBar.value.toUpperCase()) > -1)
+                    {
+                        allTr[i].style.display = '';
+                    }else{
+                        allTr[i].style.display = "none";
+                    }
+                }
+        }
+</script>
+<script>
+    getUnseenMails();
+    setInterval(getUnseenMails, 5000);
+
+    function getUnseenMails()
+    {
+        let xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function()
+        {
+            if(this.status == 200 && this.readyState == 4)
+            {
+                let unseenMails = JSON.parse(this.responseText)["unseen_mails"];
+                document.querySelector("#unseenMails").innerHTML = unseenMails;
+            }
+        };
+        xhttp.open("GET", "{{url_for('user_mail_bp.unseen_inbox', user_mail = user_mail)}}", true);
+        xhttp.send();
+    }
+</script>
+<script src = "{{url_for('static', filename = 'js/userStatus.js')}}"></script>
+    </body>
+    </html>

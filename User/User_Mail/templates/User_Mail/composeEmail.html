@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang = 'en'>
+    <head>
+        <title>INBOX</title>
+        
+
+        <meta charset = 'UTF-8'>
+        <meta name = 'viewport' content = 'width = device-width, initial-scale = 1'>
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+        <!-- jQuery library -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+        <!-- Popper JS -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+
+        <!-- Latest compiled JavaScript -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+        
+    </head>
+<body>
+    <div class = "container-fluid">
+        <div class = "row text-white bg-dark">
+            <h1>Mailer Services</h1>
+        </div>
+        <div id = "userStatusDiv" style = "display: none;">
+            <strong id = "userStatus"></strong>
+        </div>
+        <div>
+            <ul class = "nav nav-justified bg-light">
+                
+                <li class = 'nav-item'>
+                    <a href = "{{url_for('user_mail_bp.compose_email')}}" class = 'nav-link'>Compose Email</a>
+                </li>
+                <li class = 'nav-item'>
+                    <a href = "{{url_for('user_mail_bp.see_inbox')}}" class = 'nav-link'>Inbox<span id = "unseenMails" class = "badge badge-pill badge-danger" style = "margin-left: 5px;"></span></a>
+                </li>
+                <li class = 'nav-item'>
+                    <a href = "{{url_for('user_mail_bp.trash')}}" class = 'nav-link'>Trash</a>
+                </li>
+                <li class = 'nav-item'>
+                    <a href = "{{url_for('user_mail_bp.see_outbox')}}" class = 'nav-link'>Outbox</a>
+                </li>
+                <li class = 'nav-item'>
+                    <a href = "{{url_for('user_mail_bp.see_all_mail')}}" class = 'nav-link'>All Mail</a>
+                </li>
+                <li class = 'nav-item'>
+                    <a href = "{{url_for('user_profile_bp.view_profile')}}" class = 'nav-link'>View Profile</a>
+                </li>
+                <li class = 'nav-item'>
+                    <a href = "{{url_for('user_profile_bp.edit_profile_form')}}" class = 'nav-link'>Edit Profile</a>
+                </li>
+                <li class = 'nav-item'>
+                    <a href = "{{url_for('user_profile_bp.view_all_users')}}" class = 'nav-link'>View All Users</a>
+                </li>
+                <li class = 'nav-item'>
+                    <a href = "{{url_for('user_profile_bp.logout')}}" class = 'nav-link'>Logout</a>
+                </li>
+                <li class = 'nav-item'>
+                    <a href = "{{url_for('user_profile_bp.contact_us')}}" class = 'nav-link'>Contact US</a>
+                </li>
+            </ul>
+        </div>
+    <div>
+        <h4>Compose Message</h4>
+        <form action = "http://localhost:5000/sending-mail" method="POST" enctype="multipart/form-data">
+            <div class = "form-group">
+                <label for = "receiverField">To: </label>
+
+                <input type = 'mail' name = "recievers" id = "receiverField"placeholder="reciever..." value = "{%for i in to%}{{i}}{{' '}}{%endfor%}" class = "form-control" required>
+            </div>
+            <div class = "form-group">
+            <label for = "subjectField">Subject: </label>
+            <input type = 'text' name = 'subject' id = "subjectField" placeholder="subject..." class = "form-control" autocomplete = "off" required><br><br>
+            </div>
+            <div class = "form-group">
+                <label for = "messageField">Message:</label>
+                <textarea name = 'mailInfo' id = "messageField" style = "height: 400px;" class = "form-control"></textarea><br>
+            </div>
+            <div>
+                <span id = "extensionErrorMessage" class = "text-danger"></span>
+                <span id = "fileErrorMessage" class = "text-danger"></span>
+            </div>
+            <div class = "form-group">
+                <label id = "errorMessage" class = "text-danger"></label>
+                <div class = "custom-file" style = "margin-bottom: 20px;">
+                <input type = "file" name = "user_files" class = "custom-file-input" id = "custom_file" multiple>
+                <label class = "custom-file-label" for = "custom_file">Choose File</label>
+                </div>
+                <p id = "selectedFiles"></p>
+        <input type = 'submit' value = 'send' class = "btn btn-primary" style = "margin-bottom: 20px;" id = "sendBtn">
+        
+        </form>
+    </div>
+
+
+        {% with messages = get_flashed_messages(category_filter = ["danger"])%}
+            {% if messages %}
+                {% for message in messages%}
+                    <script>
+                            let message = "Error!!! {{message}}";
+                            document.getElementById("errorMessage").innerHTML = message;
+                            console.log("{{message}}");
+                    </script>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </body>
+    
+    <script>
+        getUnseenMails();
+        setInterval(getUnseenMails, 5000);
+
+        function getUnseenMails()
+        {
+            let xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function()
+            {
+                if(this.status == 200 && this.readyState == 4)
+                {
+                    let unseenMails = JSON.parse(this.responseText)["unseen_mails"];
+                    document.querySelector("#unseenMails").innerHTML = unseenMails;
+                }
+            };
+            xhttp.open("GET", "{{url_for('user_mail_bp.unseen_inbox', user_mail = user_mail)}}", true);
+            xhttp.send();
+        }
+    </script>
+
+    <script>
+        document.querySelector("#custom_file").addEventListener("change", () => {
+            let files = document.querySelector("#custom_file").files;
+            let totalSize = 0;
+            document.querySelector("#selectedFiles").innerHTML = "";
+
+            let fileExtensions = [];
+            for(let i=0;i<files.length;i++)
+            {
+                fileExtensions.push(files[i].name);
+            }
+
+            let xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function ()
+            {
+                if(this.readyState == 4 && this.status == 200)
+                {
+                    let allFiles = JSON.parse(this.responseText);
+                    let valid_files = true;
+                    for(let i=0;i<allFiles.length;i++)
+                    {
+                        if(allFiles[i]["valid"] == false)
+                        {
+                            valid_files = false;
+                            document.querySelector("#selectedFiles").innerHTML += "<span class = 'text-danger'>" + files[i].name + "</span>" + "<br>";
+                            document.querySelector("#extensionErrorMessage").innerHTML = "There is not allowed files";
+                        }else{
+                            document.querySelector("#selectedFiles").innerHTML += "<span>" + files[i].name + "</span>" + "<br>";
+                        }
+                    }
+                    if(valid_files == true)
+                    {
+                        document.querySelector("#extensionErrorMessage").innerHTML = "";
+                    }
+                    
+                }
+            };
+            let url = "{{url_for('user_mail_bp.file_extensions_validation')}}" + "?fileExtensions=" + JSON.stringify(fileExtensions);
+            xhttp.open("POST", url, true);
+            xhttp.send();
+
+            for(let i=0;i<files.length;i++)
+            {
+                totalSize += files[i].size;
+            }
+            
+            if(totalSize > parseInt("{{max_length}}"))
+            {
+                document.querySelector("#fileErrorMessage").innerHTML = "storage full";
+            }else
+            {
+                document.querySelector("#fileErrorMessage").innerHTML = "";
+            }
+        });
+        document.querySelector("#sendBtn").addEventListener("click", (event) => {
+            let fileStorageError = document.querySelector("#fileErrorMessage").innerHTML;
+            let extensionError = document.querySelector("#extensionErrorMessage").innerHTML;
+
+            if(fileStorageError == "" && extensionError == "")
+            {
+                document.querySelector("#sendBtn").submit();
+            }else
+            {
+                event.preventDefault();
+            }
+        });
+
+    </script>
+
+<script src="https://cdn.tiny.cloud/1/6njzaiile5yiwwi7bptbb4b7oeziciuqf1l0w74g8gsxy9wy/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
+<script>
+tinymce.init({
+  selector: "textarea#messageField",
+  skin: "bootstrap",
+  plugins: "lists, link, image, media",
+  toolbar:
+    "h1 h2 bold italic strikethrough blockquote bullist numlist backcolor | link image media | removeformat help",
+  menubar: false,
+  setup: editor => {
+    // Apply the focus effect
+    editor.on("init", () => {
+      editor.getContainer().style.transition =
+        "border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out";
+    });
+    editor.on("focus", () => {
+      (editor.getContainer().style.boxShadow =
+        "0 0 0 .2rem rgba(0, 123, 255, .25)"),
+        (editor.getContainer().style.borderColor = "#80bdff");
+    });
+    editor.on("blur", () => {
+      (editor.getContainer().style.boxShadow = ""),
+        (editor.getContainer().style.borderColor = "");
+    });
+  }
+});
+</script>
+<script src = "{{url_for('static', filename = 'js/userStatus.js')}}"></script>
+</html>

@@ -1,0 +1,22 @@
+body{
+    margin: 0px;
+    font-family: sans-serif, arial, helvetica;
+}
+div{
+    border: 1px solid black;
+    border-radius: 10px;
+    margin: 10px;
+}
+#headerBar{
+    padding-left: 20px;
+}
+#navBar{
+    height: 50px;
+    padding-top: 20px;
+}
+ul, li{
+    list-style: none;
+    display: inline;
+    margin: 0px 10px 0px 10px;
+    padding-left: 20px;
+}

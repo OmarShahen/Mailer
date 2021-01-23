@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang = "en">
+    <head>
+        <title>Trash</title>
+        <meta charset = "UTF-8">
+        <meta name = "viewport" content = "width = device-width, initial-scale = 1">
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+        <!-- jQuery library -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+        <!-- Popper JS -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+
+        <!-- Latest compiled JavaScript -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    </head>
+    <body>
+        <div class = "container-fluid">
+            <div class = "row text-white bg-dark">
+                <h1>Mailer Services</h1>
+            </div>
+            <div id = "userStatusDiv" style = "display: none;">
+                <strong id = "userStatus"></strong>
+            </div>
+            <div>
+                <ul class = "nav nav-justified bg-light">
+                    
+                    <li class = 'nav-item'>
+                        <a href = "{{url_for('user_mail_bp.compose_email')}}" class = 'nav-link'>Compose Email</a>
+                    </li>
+                    <li class = 'nav-item'>
+                        <a href = "{{url_for('user_mail_bp.see_inbox')}}" class = 'nav-link'>Inbox<span id = "unseenMails" class = "badge badge-pill badge-danger" style = "margin-left: 5px;"></span></a>
+                    </li>
+                    <li class = 'nav-item'>
+                        <a href = "{{url_for('user_mail_bp.trash')}}" class = 'nav-link'>Trash</a>
+                    </li>
+                    <li class = 'nav-item'>
+                        <a href = "{{url_for('user_mail_bp.see_outbox')}}" class = 'nav-link'>Outbox</a>
+                    </li>
+                    <li class = 'nav-item'>
+                        <a href = "{{url_for('user_mail_bp.see_all_mail')}}" class = 'nav-link'>All Mail</a>
+                    </li>
+                    <li class = 'nav-item'>
+                        <a href = "{{url_for('user_profile_bp.view_profile')}}" class = 'nav-link'>View Profile</a>
+                    </li>
+                    <li class = 'nav-item'>
+                        <a href = "{{url_for('user_profile_bp.edit_profile_form')}}" class = 'nav-link'>Edit Profile</a>
+                    </li>
+                    <li class = 'nav-item'>
+                        <a href = "{{url_for('user_profile_bp.view_all_users')}}" class = 'nav-link'>View All Users</a>
+                    </li>
+                    <li class = 'nav-item'>
+                        <a href = "{{url_for('user_profile_bp.logout')}}" class = 'nav-link'>Logout</a>
+                    </li>
+                    <li class = 'nav-item'>
+                        <a href = "{{url_for('user_profile_bp.contact_us')}}" class = 'nav-link'>Contact US</a>
+                    </li>
+                </ul>
+            </div>
+            <div class = "row text-dark">
+                <h3>Trash</h3>
+            </div>
+            <div>
+                <ul class = "list-group list-group-flush">
+                    {% for mail in all_mail %}
+                        <li class = "list-group-item">
+                            <span class = "badge badge-warning text-white">Trash</span>
+                            {% if mail["mail_identity"] == 1 %}
+                                <span class = "badge badge-secondary" style = "margin-left: 20px;">inbox</span>
+                            {% else %}
+                                <span class = "badge badge-secondary" style = "margin-left: 20px;">outbox</span>
+                            {% endif %}
+                            <strong style = "margin: 20px;">{{mail["sender_mail"]}}</strong>
+                            <span style = "margin: 20px;">{{mail["mail_subject"]}}</span>
+                            <a href = "{{url_for('user_mail_bp.recycle_trash', mail_id = mail['mail_id'], mail_identity = mail['mail_identity'], outbox_status = mail['outbox_status'])}}" class = "btn btn-primary float-right" style = "margin-left: 20px;">Recycle Mail</a>
+                            <a href = "{{url_for('user_mail_bp.view_mail', mail_id = mail['mail_id'])}}" class = "btn btn-primary float-right">View Mail</a>
+                            <strong style = "margin-right: 50px;" class = "float-right">{{mail["mail_date"]}}</strong>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        <script src = "{{url_for('static', filename = 'js/subjectShortner.js')}}"></script>
+        <script>
+            getUnseenMails();
+            setInterval(getUnseenMails, 5000);
+    
+            function getUnseenMails()
+            {
+                let xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function()
+                {
+                    if(this.status == 200 && this.readyState == 4)
+                    {
+                        let unseenMails = JSON.parse(this.responseText)["unseen_mails"];
+                        document.querySelector("#unseenMails").innerHTML = unseenMails;
+                    }
+                };
+                xhttp.open("GET", "{{url_for('user_mail_bp.unseen_inbox', user_mail = user_mail)}}", true);
+                xhttp.send();
+            }
+        </script>
+        <script src = "{{url_for('static', filename = 'js/userStatus.js')}}"></script>
+    </body>
+</html>

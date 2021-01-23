@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang = "en">
+    <head>
+        <title>Register Form</title>
+
+        <meta charset = "UTF-8">
+        <meta name = "viewport" content = "width = device-width, initial-scale = 1">
+
+         <!-- Latest compiled and minified CSS -->
+         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+         <!-- jQuery library -->
+         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+ 
+         <!-- Popper JS -->
+         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+ 
+         <!-- Latest compiled JavaScript -->
+         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    </head>
+<body>
+    <div class = "container-fluid">
+        <div class = "row bg-dark text-white">
+            <h1>Mailer Services</h1>
+        </div>
+        <div class = "row">
+            <div class = "col-4">
+
+            </div>
+        <div class = "card" style = "margin-top: 20px;margin-bottom: 20px;">
+            <div class = "card-header text-center">
+                <h4>Mail Services</h4>
+            </div>
+            <div class = "card-body container-fluid" style = "margin: 20px; padding-right: 70px;">
+
+    <form action = "{{url_for('forms_bp.validation')}}" method = "POST" name = "registerForm">
+        
+                <div class = "row" style = "margin: 20px;">
+                    <label for = "user_name">Full Name</label>
+                </div>
+                <div class = "row" style = "margin: 20px;">
+                    <input type = "text" name = "name" id = "user_name" placeholder = "Name" class = "form-control" required> 
+                </div>
+                <div class = "row" style = "margin: 20px;">
+                    <label for = "user_email">E-mail</label>
+                </div>
+                <div class = "row" style = "margin: 20px;">
+                    {% with messages = get_flashed_messages(category_filter = ['email_error'])%}
+                        {% if messages %}
+                            {% for message in messages%}
+                                <script>
+                                    document.querySelector("#alertMail").style.display = "block";
+                                    document.querySelector("#alertMail").innerHTML = "{{message}}";
+                                </script>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+                    <strong class = "text-danger" id = "alertMail" style = "display: none;">{{message}}</strong>
+                    <input type = "email" name = "email" id = "user_email" placeholder = "Email" class = "form-control" required>
+                </div>
+                <div class = "row" style = "margin: 20px;">
+                    <label for = "user_password">Password</label>
+                </div>
+                <div class = "row" style = "margin: 20px;">
+                    <input type = "password" name = "password" id = "user_password" placeholder = "Password" class = "form-control" required>
+                    <div class = "custom-control custom-checkbox" style = "margin-top: 10px;">
+                        <input type = "checkbox" class = "custom-control-input" id = "showMainPassword">
+                        <label class = "custom-control-label" for = "showMainPassword">show password</label>
+                    </div>
+                </div>
+                <div class = "row" style = "margin: 20px;">
+                    <span class = "text-danger" id = "confirmPasswordError"></span>
+                    <input type = "password" id = "confirm_user_password" placeholder = "Re-write password" class = "form-control" required>
+                    <div class = "custom-control custom-checkbox" style = "margin-top: 10px;">
+                        <input type = "checkbox" class = "custom-control-input" id = "showConfirmPassword">
+                        <label class = "custom-control-label" for = "showConfirmPassword">show password</label>
+                    </div>
+                </div>
+                <div class = "row" style = "margin: 20px;">
+                    <label>Gender</label>
+                </div>
+                <div class = "row" style = "margin: 20px;">
+                    <div class = "custom-control custom-radio">
+                        <input type = "radio" id = "genderMale" class = "custom-control-input" name = "gender" value = "Male" required checked>
+                        <label for = "genderMale" class = "custom-control-label">Male</label>
+                    </div>
+                    
+                </div>
+                <div class = "row" style = "margin: 20px;">
+                    <div class = "custom-control custom-radio">
+                        <input type = "radio" name = "gender" id = "genderFemale" class = "custom-control-input" value = "Female" required>
+                        <label class = "custom-control-label" for = "genderFemale">Female</label>
+                    </div>
+                    
+                </div>
+                <div class = "row" style = "margin: 20px;">
+                    <label for = "user_birth">Date Of Birth</label>
+                </div>
+                <div class = "row" style = "margin: 20px;">
+                    <input type = "date" name = "dateOfBirth" id = "user_birth" placeholder = "Date Of Birth" class = "form-control" required>
+                </div>
+                <div class = "row" style = "margin: 20px;">
+                    <label for = "user_city">City</label>
+                </div>
+                <div class = "row" style = "margin: 20px;">
+                    <input type = "text" name = "city" id = "user_city" placeholder = "City" class = "form-control" required>
+                </div>
+                <div class = "row" style = "margin: 20px;">
+                    <label for = "user_country">Country</label>
+                </div>
+                <div class = "row" style = "margin: 20px;">
+                    <input type = "text" name = "country" id = "user_country" placeholder = "Country" class = "form-control" required>
+                </div>
+                <div class = "row" style = "margin: 20px;">
+                    <label for = "user_contact">Contact</label>
+                </div>
+                <div class = "row" style = "margin: 20px;">
+                    <span id = "phoneValidationMessage" class = "text-danger" style = "display: none;"></span>
+                    <input type = "text" name = "contact" id = "user_contact" placeholder = "Contact" class = "form-control" required>
+                </div>
+                <div class = "row" style = "margin: 20px;">
+                    <div class = "custom-control custom-checkbox" style = "margin-top: 10px;">
+                        <input type = "checkbox" class = "custom-control-input" id = "remeber_me">
+                        <label class = "custom-control-label" for = "remeber_me">Remeber me</label>
+                    </div>
+                </div>
+                <div class = "row justify-content-center">
+                    <input type = "submit" value = "Submit" class = "btn btn-primary float-right" id = "submitButton">
+                </div>
+                    
+                </div>
+            
+                
+
+    </form>
+        </div>
+        <div class = "row">
+
+        </div>
+        
+        </div>
+        </div>
+        <div class = "col-4">
+
+        </div>
+        </div>
+
+
+        <script>
+            document.querySelector("#user_email").addEventListener("keyup", () => {
+                let emailInputField= document.querySelector("#user_email").value;
+                if(emailInputField == "")
+                {
+                    return
+                }
+                let xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function ()
+                {
+                    if(this.readyState == 4 && this.status == 200)
+                    {
+                        document.querySelector("#alertMail").style.display = "block";
+                        let responseMessasge = JSON.parse(this.responseText);
+                        document.querySelector("#alertMail").innerHTML = responseMessasge["message"];
+                        if(responseMessasge["valid"] == true)
+                            document.querySelector("#alertMail").className = "text-success";
+                        else
+                            document.querySelector("#alertMail").className = "text-danger";
+                    }
+                };
+                xhttp.open("GET", "/emails-validator/" + document.querySelector("#user_email").value, true);
+                xhttp.send();
+            });
+            
+        </script>
+
+        <script>
+            document.querySelector("#user_contact").addEventListener("keyup", () => {
+                let phoneField = document.querySelector("#user_contact").value;
+                if(phoneField == "")
+                {
+                    return;
+                }
+                let xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function()
+                {
+                    if(this.readyState == 4 && this.status == 200)
+                    {
+                        serverResponse = JSON.parse(this.responseText);
+                        if(serverResponse["valid"] == false)
+                        {
+                            document.querySelector("#phoneValidationMessage").innerHTML = serverResponse["message"];
+                            document.querySelector("#phoneValidationMessage").style.display = "block";
+                        }else{
+                            document.querySelector("#phoneValidationMessage").style.display = "none";
+                            document.querySelector("#phoneValidationMessage").innerHTML = "";
+                        }
+
+                    }
+                };
+                xhttp.open("GET", "/phone-number/validator/" + phoneField, true);
+                xhttp.send();
+            });
+        </script>
+
+        <script>
+            document.querySelector("#submitButton").addEventListener("click", (event) => {
+                let phoneAlert = document.querySelector("#phoneValidationMessage").innerHTML;
+                let mailAlert = document.querySelector("#alertMail").innerHTML;
+                let confirmPass = document.querySelector("#confirmPasswordError").innerHTML;
+
+                if(mailAlert == "this mail is taken" || phoneAlert != "" || confirmPass != "")
+                {
+                    event.preventDefault();
+                }else
+                {
+                    document.querySelector("#submitButton").submit();
+                }
+            });
+        </script>
+
+        <script>
+            document.querySelector("#showMainPassword").addEventListener("click", () => {
+                let mainPass = document.querySelector("#user_password");
+                if(mainPass.type == "password")
+                {
+                    mainPass.type = "text";
+                }else
+                {
+                    mainPass.type = "password";
+                }
+            });
+       
+            document.querySelector("#showConfirmPassword").addEventListener("click", () => {
+                let confirmPass = document.querySelector("#confirm_user_password");
+                if(confirmPass.type == "password")
+                {
+                    confirmPass.type = "text";
+                }else
+                {
+                    confirmPass.type = "password"
+                }
+            });
+
+            document.querySelector("#confirm_user_password").addEventListener("focusout", () => {
+
+                let confirmedPass = document.querySelector("#confirm_user_password").value;
+                let originPass = document.querySelector("#user_password").value;
+                if(confirmedPass != originPass)
+                {
+                    document.querySelector("#confirmPasswordError").innerHTML = "Rewrite the same password";
+                }else
+                {
+                    document.querySelector("#confirmPasswordError").innerHTML = "";
+                }
+            });
+       
+        </script>
+
+        
+</body>
+</html>
